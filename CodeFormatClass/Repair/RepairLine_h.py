@@ -10,7 +10,7 @@
     这里的所有处理，都是指修复，
     这里所有的函数，都返回两个值，第一个值是修改的内容，第二个值是新的文件行数组
 """
-
+import math
 import re
 
 from CodeFormatClass.InfoMsg.InfoMsg import *
@@ -109,7 +109,6 @@ def RepairIncludes(filename, lines):
             lines.remove(head_list[index])
         lines.insert(head_first - 1, head_list[index])
         head_first += 1
-        pass
 
     return lint, lines
 
@@ -131,6 +130,38 @@ def RepairTabs(filename, lines):
                     strNew += line[i:len(line)]
                     break
             lines[index] = strNew
+        line_num += 1
+    return lint, lines
+
+
+# 这个处理 Tab 还是空格缩进的问题
+def RepairSpace(filename, lines):
+    lint = []
+    tab_re = re.compile(r'^\s+')
+    line_num = 1
+    bRemake = False
+    for index in range(len(lines)):
+        line = lines[index]
+        strSub = tab_re.match(line.rstrip('\n'))
+        if strSub:
+            strSub = strSub.group(0)
+            bRemake = False
+            for it in strSub:
+                if it == ' ':
+                    lint.append(InfoMsg(filename, line_num, '发现了空格开头'))
+                    bRemake = True
+                    break
+            if bRemake is True:
+                nspace = 0
+                ntab = 0
+                for it in strSub:
+                    if it == ' ':
+                        nspace += 1
+                    elif it == '\t':
+                        ntab += 1
+                nCount = int(math.floor((nspace + 3) / 4))
+                nCount += ntab
+                lines[index] = (nCount * "\t") + line[len(strSub):]
         line_num += 1
     return lint, lines
 

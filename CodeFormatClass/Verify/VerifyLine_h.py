@@ -81,6 +81,23 @@ def VerifyTabs(filename, lines):
     return lint
 
 
+# 这个处理空格缩进的问题
+def VerifySpace(filename, lines):
+    lint = []
+    tab_re = re.compile(r'^\s+')
+    line_num = 1
+    for index in range(len(lines)):
+        line = lines[index]
+        strSub = tab_re.match(line.rstrip('\n'))
+        if strSub:
+            for it in strSub.group(0):
+                if it == ' ':
+                    lint.append(InfoMsg(filename, line_num, '发现了空格开头'))
+                    break
+        line_num += 1
+    return lint, lines
+
+
 # 处理尾随空格的问题
 def VerifyTrailingWhitespace(filename, lines):
     lint = []

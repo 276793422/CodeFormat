@@ -41,6 +41,17 @@ class CodeFormatBase:
 
         return lintTemp, lines
 
+    # 处理 空格缩进
+    def TestSpace(self, filename, lines):
+        lint = []
+        # 检测是否是 TAB 缩进
+        if self.repair:
+            lintTemp, lines = RepairSpace(filename, lines)
+        else:
+            lintTemp = VerifySpace(filename, lines)
+
+        return lintTemp, lines
+
     def TestTrailingWhitespace(self, filename, lines):
         lint = []
         if self.repair:

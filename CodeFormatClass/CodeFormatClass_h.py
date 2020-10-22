@@ -19,5 +19,6 @@ from .Repair.RepairLine_h import *
 from .CodeFormatClassBase import *
 from .CodeFormatClassZoo import *
 from .CodeFormatClassCF import *
+from .CodeFormatClassCustom import *
 
 
