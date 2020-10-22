@@ -98,6 +98,20 @@ def VerifyTrailingWhitespace(filename, lines):
 
 
 # 处理大括号后，第一个就是换行
+def VerifyBlankLine(filename, lines):
+    lint = []
+    line_num = 1
+    for index in range(len(lines)):
+        line = lines[index]
+        # 如果当前行是空行
+        if line.rstrip('\n') == "":
+            if index > 0:
+                # 如果上一行是 {
+                strlast = lines[index - 1].rstrip('\n')
+                if strlast.endswith('{'):
+                    lint.append(InfoMsg(filename, line_num, '发现了多余空行'))
+        line_num += 1
+    return lint
 
 
 

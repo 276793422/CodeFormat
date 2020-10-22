@@ -19,7 +19,7 @@ def SaveStingArrayIntoFile(info, save_file, split=""):
     return save_file
 
 
-# 加载一个文件到数组
+# 加载一个文件到数组，这里会去掉结尾的换行
 def LoadFileToArray(path):
     file_line = []
     file = open(path, "r", errors='ignore')

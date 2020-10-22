@@ -34,6 +34,10 @@ class CodeFormatCF(CodeFormatBase):
         lintTemp, lines = self.TestTrailingWhitespace(filename, lines)
         lint.extend(lintTemp)
 
+        # 删除大括号后面的空行
+        lintTemp, lines = self.TestBlankLine(filename, lines)
+        lint.extend(lintTemp)
+
         SaveStingArrayIntoFile(lines, filename, '\n')
 
         return lint

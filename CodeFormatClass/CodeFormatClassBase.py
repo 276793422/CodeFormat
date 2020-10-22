@@ -50,6 +50,14 @@ class CodeFormatBase:
 
         return lintTemp, lines
 
+    def TestBlankLine(self, filename, lines):
+        lint = []
+        if self.repair:
+            lintTemp, lines = RepairBlankLine(filename, lines)
+        else:
+            lintTemp = VerifyBlankLine(filename, lines)
+
+        return lintTemp, lines
 
     def RunOnFile(self, filename):
         print("error CodeFormat Error \n")
