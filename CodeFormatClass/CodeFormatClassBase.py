@@ -59,6 +59,15 @@ class CodeFormatBase:
 
         return lintTemp, lines
 
+    def TestSpaceLine(self, filename, lines):
+        lint = []
+        if self.repair:
+            lintTemp, lines = RepairSpaceLine(filename, lines)
+        else:
+            lintTemp = VerifySpaceLine(filename, lines)
+
+        return lintTemp, lines
+
     def RunOnFile(self, filename):
         print("error CodeFormat Error \n")
         return []

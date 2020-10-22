@@ -138,12 +138,14 @@ def RepairTabs(filename, lines):
 # 处理尾随空格的问题
 def RepairTrailingWhitespace(filename, lines):
     lint = []
-    trailing_whitespace_re = re.compile("\s+$")
+    trailing_whitespace_re = re.compile(".*\s+$")
     line_num = 1
-    for line in lines:
+    for index in range(len(lines)):
+        line = lines[index]
         line_rule = trailing_whitespace_re.match(line.rstrip('\n'))
         if line_rule:
             lint.append(InfoMsg(filename, line_num, '发现尾随空格，能删了就删了'))
+            lines[index] = lines[index].rstrip()
         line_num += 1
     return lint, lines
 
@@ -175,6 +177,21 @@ def RepairBlankLine(filename, lines):
                     salt_num += 1
                     # 行号回退
                     line_num -= 1
+        line_num += 1
+    return lint, lines
+
+
+# 处理这一行如果只有空白字符，则处理为空行
+def RepairSpaceLine(filename, lines):
+    lint = []
+    trailing_whitespace_re = re.compile(r'^\s+$')
+    line_num = 1
+    for index in range(len(lines)):
+        line = lines[index]
+        line_rule = trailing_whitespace_re.match(line.rstrip('\n'))
+        if line_rule:
+            lint.append(InfoMsg(filename, line_num, '发现空白行已经修复'))
+            lines[index] = ""
         line_num += 1
     return lint, lines
 

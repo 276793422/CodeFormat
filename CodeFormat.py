@@ -25,6 +25,8 @@ def CppLintMain(filenames):
     if len(msg) > 0:
         for info in msg:
             print('%s:%d:%s' % (info.file, info.line, info.msg))
+    else:
+        print('代码合规，可以提交')
 
     return 0
 

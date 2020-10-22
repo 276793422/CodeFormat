@@ -84,7 +84,7 @@ def VerifyTabs(filename, lines):
 # 处理尾随空格的问题
 def VerifyTrailingWhitespace(filename, lines):
     lint = []
-    trailing_whitespace_re = re.compile(r'\s+$')
+    trailing_whitespace_re = re.compile(r'.*\s+$')
     line_num = 1
     for line in lines:
         line_rule = trailing_whitespace_re.match(line.rstrip('\n'))
@@ -110,6 +110,19 @@ def VerifyBlankLine(filename, lines):
                 strlast = lines[index - 1].rstrip('\n')
                 if strlast.endswith('{'):
                     lint.append(InfoMsg(filename, line_num, '发现了多余空行'))
+        line_num += 1
+    return lint
+
+
+# 检测这一行是否只有空白字符
+def VerifySpaceLine(filename, lines):
+    lint = []
+    trailing_whitespace_re = re.compile(r'^\s+$')
+    line_num = 1
+    for line in lines:
+        line_rule = trailing_whitespace_re.match(line.rstrip('\n'))
+        if line_rule:
+            lint.append(InfoMsg(filename, line_num, '发现空白行'))
         line_num += 1
     return lint
 
