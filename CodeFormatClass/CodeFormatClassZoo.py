@@ -14,6 +14,10 @@ from .CodeFormatClass_h import *
 
 # 个人代码规范
 class CodeFormatZoo(CodeFormatBase):
+
+    def __init__(self, repair=False):
+        self.repair = repair
+
     def RunOnFile(self, filename):
         return []
 

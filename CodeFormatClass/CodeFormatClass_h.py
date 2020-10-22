@@ -14,6 +14,7 @@ from Library import *
 
 
 from .Verify.VerifyLine_h import *
+from .Repair.RepairLine_h import *
 
 from .CodeFormatClassBase import *
 from .CodeFormatClassZoo import *

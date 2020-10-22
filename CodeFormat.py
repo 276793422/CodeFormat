@@ -15,7 +15,7 @@ from CodeFormatClass.CodeFormatClass_h import *
 
 
 def CppLintMain(filenames):
-    cf = CodeFormatCF()
+    cf = CodeFormatCF(True)
     msg = []
 
     for filename in filenames:

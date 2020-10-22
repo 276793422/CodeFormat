@@ -9,25 +9,31 @@
 """
 
 """
-
 from .CodeFormatClass_h import *
 
 
 # CF代码规范
 class CodeFormatCF(CodeFormatBase):
+
+    def __init__(self, repair=False):
+        self.repair = repair
+
     def RunOnFile(self, filename):
         lines = LoadFileToArray(filename)
         lint = []
 
         # 先检测头文件包含
-        lint.extend(VerifyIncludes(filename, lines))
+        lintTemp, lines = self.TestIncludes(filename, lines)
+        lint.extend(lintTemp)
 
-        lint.extend(VerifyTabs(filename, lines))
+        # 检测是否是 TAB 缩进
+        lintTemp, lines = self.TestTabs(filename, lines)
+        lint.extend(lintTemp)
 
-        lint.extend(VerifyTrailingWhitespace(filename, lines))
+        # 检测行尾是否是空格
+        lintTemp, lines = self.TestTrailingWhitespace(filename, lines)
+        lint.extend(lintTemp)
+
+        SaveStingArrayIntoFile(lines, filename, '\n')
 
         return lint
-
-
-
-
