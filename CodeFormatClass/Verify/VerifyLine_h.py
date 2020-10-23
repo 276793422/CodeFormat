@@ -160,4 +160,26 @@ def VerifySpaceLine(filename, lines):
 
 
 # 处理 == 两侧，将右值放左边
+def VerifyLogicEqual(filename, lines):
+    flags = [".*==.*", ".*!=.*"]
+    values = ["NULL", "TRUE", "FALSE", "true", "false", "nullptr"]
+    lint = []
+    line_num = 1
 
+    # 循环判断两个比较
+    for flag in flags:
+        # 循环判断每一行代码
+        for index in range(len(lines)):
+            line = lines[index]
+            # 判断一行代码
+            if re.match(flag, line):
+                # 找所有右值
+                for value in values:
+                    # 拼右值路径     ".*==.*NULL.*"
+                    flag_str = ".*(" + flag + value + ".*).*"
+                    flag_info = re.match(flag_str, line)
+                    if flag_info:
+                        lint.append(InfoMsg(filename, line_num, '找到了一行 == 异常：' + line))
+            line_num += 1
+
+    return lint, lines

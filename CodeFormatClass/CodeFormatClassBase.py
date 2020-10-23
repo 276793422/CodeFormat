@@ -88,6 +88,15 @@ class CodeFormatBase:
 
         return lintTemp, lines
 
+    def TestLogicEqual(self, filename, lines):
+        lint = []
+        if self.repair:
+            lintTemp, lines = RepairLogicEqual(filename, lines)
+        else:
+            lintTemp = VerifyLogicEqual(filename, lines)
+
+        return lintTemp, lines
+
     def RunOnFile(self, filename):
         print("error CodeFormat Error \n")
         return []

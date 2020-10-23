@@ -30,6 +30,10 @@ class CodeFormatCustom(CodeFormatBase):
         lintTemp, lines = self.TestSpace(filename, lines)
         lint.extend(lintTemp)
 
+        # 检测是否是 空格 缩进
+        lintTemp, lines = self.TestLogicEqual(filename, lines)
+        lint.extend(lintTemp)
+
         if len(lint) > 0:
             SaveStingArrayIntoFile(lines, filename, '\n')
 

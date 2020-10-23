@@ -24,7 +24,7 @@ def RepairIncludes(filename, lines):
     include_system_re = re.compile(r'^#include <(.*)>')
 
     STDAFX_HEADERS = 'stdafx.h'
-    STDAFX_STATUS = ['','']
+    STDAFX_STATUS = ['', '']
 
     prev_config_header = None
     prev_system_header = None
@@ -53,7 +53,8 @@ def RepairIncludes(filename, lines):
                 STDAFX_STATUS[0] = line
                 # 如果是，那么就必须在最前面
                 if prev_config_header or prev_system_header:
-                    lint.append(InfoMsg(filename, line_num, '预编译头文引用必须位于所有头文件的第一个: #include "' + curr_config_header + '"'))
+                    lint.append(
+                        InfoMsg(filename, line_num, '预编译头文引用必须位于所有头文件的第一个: #include "' + curr_config_header + '"'))
             # 不是 stdafx
             else:
                 # 记录当前头文件后面排序用
@@ -61,7 +62,8 @@ def RepairIncludes(filename, lines):
 
                 if prev_config_header:
                     if prev_config_header > curr_config_header:
-                        lint.append(InfoMsg(filename, line_num, '头文件顺序异常，已修复，之前: "' + prev_config_header + '" 在 "' + curr_config_header + '" 前面'))
+                        lint.append(InfoMsg(filename, line_num,
+                                            '头文件顺序异常，已修复，之前: "' + prev_config_header + '" 在 "' + curr_config_header + '" 前面'))
 
                 # 只有在不是的时候，才往后传
                 prev_config_header = curr_config_header
@@ -78,14 +80,16 @@ def RepairIncludes(filename, lines):
             if curr_system_header.lower() == STDAFX_HEADERS.lower():
                 STDAFX_STATUS[1] = line
                 if prev_config_header or prev_system_header:
-                    lint.append(InfoMsg(filename, line_num, '预编译头文引用必须位于所有头文件的第一个: #include <' + curr_system_header + '>'))
+                    lint.append(
+                        InfoMsg(filename, line_num, '预编译头文引用必须位于所有头文件的第一个: #include <' + curr_system_header + '>'))
             else:
                 head_list.append(line)
 
                 if prev_system_header:
                     # Make sure system headers are alphabetized amongst themselves
                     if prev_system_header > curr_system_header:
-                        lint.append(InfoMsg(filename, line_num, '头文件顺序异常，已修复，之前: <' + prev_system_header + '> 在 <' + curr_system_header + '> 前面'))
+                        lint.append(InfoMsg(filename, line_num,
+                                            '头文件顺序异常，已修复，之前: <' + prev_system_header + '> 在 <' + curr_system_header + '> 前面'))
 
                 prev_system_header = curr_system_header
 
@@ -252,7 +256,60 @@ def RepairSpaceLine(filename, lines):
     return lint, lines
 
 
+# 处理 == 两侧，将右值放左边
+def RepairLogicEqual(filename, lines):
+    flags = [".*==.*", ".*!=.*"]
+    values = ["NULL", "TRUE", "FALSE", "true", "false", "nullptr"]
+    flaglist = ['=', '&&', '||', '!']
+    lint = []
 
+    # 循环判断两个比较
+    for flag in flags:
+        # 循环判断每一行代码
+        line_num = 1
+        for index in range(len(lines)):
+            line = lines[index]
+            # 判断一行代码
+            if re.match(flag, line):
+                # 找所有右值
+                for value in values:
+                    # 拼右值路径     ".*==.*NULL.*"
+                    flag_str = ".*(" + flag + value + ".*).*"
+                    flag_info = re.match(flag_str, line)
+                    if flag_info:
+                        str_out = "无法修复"
+                        subflag = flag.replace(".*", "")
+                        # 多个括号就不修复了，必须只有一个才修，符号也只能有一个，如果有多个的话，这里管不了
+                        if line.count('(') == 1 and line.count(')') == 1 and line.count(subflag) == 1:
+                            # 到这里就只剩下一个括号了，变成类似这样了  "(ZZZ == NULL)"
+                            ileft = line.find('(')
+                            iright = line.find(')')
+                            # 前面已经判断了，左右都能找到，所以这里只需要判断顺序，避免出现  )(  这种
+                            if ileft < iright:
+                                # 得到   “ZZZ==NULL”
+                                subline = line[ileft + 1: iright].replace(" ", "")
+                                # 得到    ["ZZZ", "NULL"]
+                                splitline = subline.split(subflag)
+                                # 进来的规则就是只能有一个当前符号，所以这里必然有两个元素，不用判断了
+                                ba = True
+                                for chr in splitline[0]:
+                                    if chr in flaglist:
+                                        ba = False
+                                        break
+                                for chr in splitline[1]:
+                                    if chr in flaglist:
+                                        ba = False
+                                        break
 
+                                # 这个ba 的用途是判断是否是一个复合语句，比如如下：
+                                #   (a == NULL || b != a)
+                                #   (b != a || a == NULL)
+                                if ba:
+                                    # 交换，开头 + NULL + 空格 + == + 空格 + ZZZ + 结尾
+                                    str = line[0: ileft + 1] + splitline[1] + " " + subflag + " " + splitline[0] + line[iright:]
+                                    lines[index] = str
+                                    str_out = "已经修复"
+                        lint.append(InfoMsg(filename, line_num, '找到了一行 == 异常（' + str_out + '）：' + line))
+            line_num += 1
 
-
+    return lint, lines
