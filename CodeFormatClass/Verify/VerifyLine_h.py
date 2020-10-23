@@ -179,7 +179,13 @@ def VerifyLogicEqual(filename, lines):
                     flag_str = ".*(" + flag + value + ".*).*"
                     flag_info = re.match(flag_str, line)
                     if flag_info:
-                        lint.append(InfoMsg(filename, line_num, '找到了一行 == 异常：' + line))
+                        bw = True
+                        for it in lint:
+                            # 当前文件当前行如果有标记，就不记了
+                            if it.line == line_num and it.file == filename:
+                                bw = False
+                        if bw:
+                            lint.append(InfoMsg(filename, line_num, '找到了一行 == 异常：' + line))
             line_num += 1
 
     return lint, lines

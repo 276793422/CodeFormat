@@ -309,7 +309,13 @@ def RepairLogicEqual(filename, lines):
                                     str = line[0: ileft + 1] + splitline[1] + " " + subflag + " " + splitline[0] + line[iright:]
                                     lines[index] = str
                                     str_out = "已经修复"
-                        lint.append(InfoMsg(filename, line_num, '找到了一行 == 异常（' + str_out + '）：' + line))
+                        bw = True
+                        for it in lint:
+                            # 当前文件当前行如果有标记，就不记了
+                            if it.line == line_num and it.file == filename:
+                                bw = False
+                        if bw:
+                            lint.append(InfoMsg(filename, line_num, '找到了一行 == 异常（' + str_out + '）：' + line))
             line_num += 1
 
     return lint, lines
