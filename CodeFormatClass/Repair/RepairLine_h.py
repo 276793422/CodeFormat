@@ -152,7 +152,7 @@ def RepairSpace(filename, lines):
             bRemake = False
             for it in strSub:
                 if it == ' ':
-                    lint.append(InfoMsg(filename, line_num, '发现了空格开头'))
+                    lint.append(InfoMsg(filename, line_num, '发现了空格开头，每 4 个 空格，补成一个 TAB ，向上对齐'))
                     bRemake = True
                     break
             if bRemake is True:
