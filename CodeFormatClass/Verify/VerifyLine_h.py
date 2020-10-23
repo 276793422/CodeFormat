@@ -18,8 +18,9 @@ from CodeFormatClass.InfoMsg.InfoMsg import *
 def VerifyIncludes(filename, lines):
     lint = []
 
-    include_config_re = re.compile(r'^#include "(.*)"')
-    include_system_re = re.compile(r'^#include <(.*)>')
+    # 【\s*】 是用来处理类似这种情况的  【#    include <stdio.h>】
+    include_config_re = re.compile(r'^#\s*include "(.*)"')
+    include_system_re = re.compile(r'^#\s*include <(.*)>')
 
     STDAFX_HEADERS = 'stdafx.h'
 
@@ -112,6 +113,20 @@ def VerifyTrailingWhitespace(filename, lines):
 
 
 # 处理连续两个换行
+def VerifyDoubleBlankLine(filename, lines):
+    lint = []
+    line_num = 1
+    for index in range(len(lines)):
+        line = lines[index]
+        # 如果当前行是空行
+        if line.rstrip('\n') == "":
+            if index > 0:
+                # 如果上一行也是空行
+                strlast = lines[index - 1].rstrip('\n')
+                if strlast == "":
+                    lint.append(InfoMsg(filename, line_num, '发现了连续多行空行'))
+        line_num += 1
+    return lint
 
 
 # 处理大括号后，第一个就是换行
@@ -144,5 +159,5 @@ def VerifySpaceLine(filename, lines):
     return lint
 
 
-
+# 处理 == 两侧，将右值放左边
 

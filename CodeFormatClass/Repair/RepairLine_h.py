@@ -182,6 +182,31 @@ def RepairTrailingWhitespace(filename, lines):
 
 
 # 处理连续两个换行
+def RepairDoubleBlankLine(filename, lines):
+    lint = []
+    line_num = 1
+    salt_num = 0
+    for index in range(len(lines)):
+        index -= salt_num
+        # 这里重复判断，是因为lines 长度会改变，所以这里需要处理
+        if index >= len(lines):
+            break
+        line = lines[index]
+        # 如果当前行是空行
+        if line.rstrip('\n') == "":
+            if index > 0:
+                # 如果上一行是 {
+                strlast = lines[index - 1].rstrip('\n')
+                if strlast == "":
+                    lint.append(InfoMsg(filename, line_num, '发现了连续多行空行，已删除，只保留一行'))
+                    # 删除指定的
+                    del lines[index]
+                    # 索引回退
+                    salt_num += 1
+                    # 行号回退
+                    line_num -= 1
+        line_num += 1
+    return lint, lines
 
 
 # 处理大括号后，第一个就是换行

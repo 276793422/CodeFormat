@@ -61,6 +61,15 @@ class CodeFormatBase:
 
         return lintTemp, lines
 
+    def TestDoubleBlankLine(self, filename, lines):
+        lint = []
+        if self.repair:
+            lintTemp, lines = RepairDoubleBlankLine(filename, lines)
+        else:
+            lintTemp = VerifyDoubleBlankLine(filename, lines)
+
+        return lintTemp, lines
+
     def TestBlankLine(self, filename, lines):
         lint = []
         if self.repair:
