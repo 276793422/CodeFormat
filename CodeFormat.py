@@ -52,7 +52,7 @@ def CppLintMain():
     else:
         print('代码合规，可以提交')
 
-    return 0
+    return
 
 
 if __name__ == '__main__':
