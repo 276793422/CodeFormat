@@ -14,11 +14,35 @@ import sys
 from CodeFormatClass.CodeFormatClass_h import *
 
 
-def CppLintMain(filenames):
-    cf = CodeFormatCustom(True)
+def CppLintMain():
+    if len(sys.argv) == 1:
+        return
+
+    if len(sys.argv) == 2:
+        return
+
+    file_names = sys.argv[2:]
+    format_type = sys.argv[1]
+
+    cf = None
+    if format_type == "cf":
+        cf = CodeFormatCF(True)
+        pass
+    elif format_type == "zoo":
+        cf = CodeFormatZoo(True)
+        pass
+    elif format_type == "custom":
+        cf = CodeFormatCustom(True)
+        pass
+    else:
+        cf = CodeFormatBase(True)
+
+    if cf is None:
+        return
+
     msg = []
 
-    for filename in filenames:
+    for filename in file_names:
         info = cf.RunOnFile(filename)
         msg.extend(info)
 
@@ -32,4 +56,4 @@ def CppLintMain(filenames):
 
 
 if __name__ == '__main__':
-    sys.exit(CppLintMain(sys.argv[1:]))
+    CppLintMain()
